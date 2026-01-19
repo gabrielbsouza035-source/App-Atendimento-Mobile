@@ -1,65 +1,75 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { UserDropdown } from './user-dropdown';
 
-export default function Header() {
+export function Header() {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Sair",
+      "Deseja realmente sair da aplicação?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { 
+          text: "Sair", 
+          style: "destructive", 
+          onPress: () => router.replace('/' as any) 
+        }
+      ]
+    );
+  };
+
   return (
-    // SafeAreaView garante que o conteúdo não fique embaixo da câmera/entalhe do celular
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        
-        {/* Lado Esquerdo: Logo ou Nome */}
-        <View style={styles.leftContainer}>
-          <Text style={styles.brandName}>CliniCarx</Text>
-        </View>
+    <View style={styles.container}>
+      <Text style={styles.logo}>ClinicarX</Text>
+      
+      <TouchableOpacity 
+        activeOpacity={0.7}
+        onPress={() => setDropdownOpen(!dropdownOpen)}
+      >
+        <Image 
+          source={{ uri: 'https://github.com/github.png' }} 
+          style={styles.avatar}
+        />
+      </TouchableOpacity>
 
-        {/* Lado Direito: Ícone ou Botão de Perfil */}
-        <TouchableOpacity style={styles.profileButton}>
-          <View style={styles.avatarPlaceholder}>
-            <Text style={styles.avatarText}>JD</Text>
-          </View>
-        </TouchableOpacity>
-
-      </View>
-    </SafeAreaView>
+      <UserDropdown 
+        isVisible={dropdownOpen}
+        onClose={() => setDropdownOpen(false)}
+        onNavigateProfile={() => router.push('/profile' as any)}
+        onLogout={handleLogout}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: '#fff', // Fundo branco igual ao card de login
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0', // Linha sutil para separar do corpo
-  },
   container: {
-    height: 60,
-    flexDirection: 'row', // Alinha os itens em linha (horizontal)
-    alignItems: 'center',
-    justifyContent: 'space-between', // Joga a logo pra esquerda e perfil pra direita
-    paddingHorizontal: 20,
-  },
-  leftContainer: {
+    height: 80,
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+    zIndex: 1000,
   },
-  brandName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0fb184', // Verde padrão
+  logo: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#9333EA',
   },
-  profileButton: {
-    padding: 5,
-  },
-  avatarPlaceholder: {
-    width: 35,
-    height: 35,
-    borderRadius: 18,
-    backgroundColor: '#cbd5e1',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#475569',
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 2,
+    borderColor: '#9333EA',
+    backgroundColor: '#E5E7EB',
   },
 });
