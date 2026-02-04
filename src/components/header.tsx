@@ -1,52 +1,50 @@
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Feather } from '@expo/vector-icons'; // Resolve erro de 'Feather'
+import React, { useState } from 'react'; // Resolve erro de 'useState'
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'; // Resolve erros de 'View', 'TouchableOpacity' e 'StyleSheet'
+
+import LogoImage from '../../assets/logo.png';
 import { UserDropdown } from './user-dropdown';
 
-export function Header() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const router = useRouter();
+// 1. Tipagem: Definimos a interface ANTES da função
+interface HeaderProps {
+  onLogout: () => void;
+  onNavigateProfile: () => void;
+  onNavigateHome: () => void;
+}
 
-  const handleLogout = () => {
-    Alert.alert(
-      "Sair",
-      "Deseja realmente sair da aplicação?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { 
-          text: "Sair", 
-          style: "destructive", 
-          onPress: () => router.replace('/' as any) 
-        }
-      ]
-    );
-  };
+export function Header({ onLogout, onNavigateProfile, onNavigateHome }: HeaderProps) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>ClinicarX</Text>
+      {/* Clique na Logo para voltar Home */}
+      <TouchableOpacity onPress={onNavigateHome} activeOpacity={0.7}>
+        <Image 
+          source={LogoImage} 
+          style={styles.logo} 
+          resizeMode="contain" 
+        />
+      </TouchableOpacity>
       
       <TouchableOpacity 
-        activeOpacity={0.7}
+        style={styles.avatar} 
         onPress={() => setDropdownOpen(!dropdownOpen)}
+        activeOpacity={0.7}
       >
-        <Image 
-          source={{ uri: 'https://github.com/github.png' }} 
-          style={styles.avatar}
-        />
+        <Feather name="user" size={24} color="#9333ea" />
       </TouchableOpacity>
 
       <UserDropdown 
         isVisible={dropdownOpen}
         onClose={() => setDropdownOpen(false)}
-        onNavigateProfile={() => router.push('/profile' as any)}
-        onLogout={handleLogout}
+        onNavigateProfile={onNavigateProfile} 
+        onLogout={onLogout}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ // 'create' agora vai existir pois StyleSheet foi importado
   container: {
     height: 80,
     backgroundColor: '#FFFFFF',
@@ -55,21 +53,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingTop: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
     zIndex: 1000,
+    elevation: 4,
   },
-  logo: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#9333EA',
+  logo: { 
+    width: 120, 
+    height: 40, 
   },
-  avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    borderWidth: 2,
-    borderColor: '#9333EA',
-    backgroundColor: '#E5E7EB',
+  avatar: { 
+    width: 44,
+    height: 44,
+    borderRadius: 22, 
+    borderWidth: 1.5, 
+    borderColor: '#9333ea', 
+    backgroundColor: '#F3E8FF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
